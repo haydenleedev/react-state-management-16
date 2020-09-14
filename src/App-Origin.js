@@ -19,6 +19,7 @@ class App extends Component {
       },
      users: [],
      usernameValidation: false,
+    isToggleOn: false,
   };
 
 firstNameHandleChange = event => {
@@ -36,26 +37,40 @@ usernameeHandleChange = event => {
   user.username= event.target.value;
   this.setState({user});
   
-  this.state.users.map( user => (
-     (user.username === this.state.user.username)
-         ? this.setState({usernameValidation: true})
-         : this.setState({usernameValidation: false})
-   ));
 };
 inputIsEmpty = () => {
   return this.state.user.username === '';
 };
-addItem = (event) => {
+toggleHandle = () => {
+  	this.setState(prevState => ({
+      isToggleOn: !prevState.isToggleOn
+    }));
+}
+handleSubmit = (event) => {
  event.preventDefault();
-  this.setState((prevState) => ({
+  
+  if(!this.usernameValidation()) {
+    const userValidation = document.querySelector('.username-validation');
+    if(userValidation) {
+       userValidation.remove();
+       }
+    
+     this.setState((prevState) => ({
     users: [...prevState.users, this.state.user],
   }));
+  } else {
+  	document.querySelector("form").insertAdjacentHTML('beforeend', '<p class="error">You cannot add a user that already exists.</p>');
+  }
+ 
 };
 usernameValidation = (event) => {
-     return (this.state.usernameValidation === true)
-         ? true
-         : false
-
+  let result = false;
+  for (let user of this.state.users) {
+     (user.username === this.state.user.username)
+         ? result = true
+         : result = false
+  }
+  return result
 };
 
   render() {
@@ -64,9 +79,12 @@ usernameValidation = (event) => {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">ReactND - Coding Practice</h1>
         </header>
-		<form onSubmit={this.addItem}>
+
+	<div>
+<h1 className="App-title">Users</h1>
+
+		<form onSubmit={this.handleSubmit}>
 			<input 
 				type="text"
 				placeholder = "First Name"
@@ -83,17 +101,20 @@ usernameValidation = (event) => {
 				value = {this.state.user.username}
 				onChange={this.usernameeHandleChange}
 			/>
-			<button disabled={(this.inputIsEmpty() || (this.usernameValidation()))} onClick = {this.usernameValidation}>Add</button>
+			<button disabled={this.inputIsEmpty()} onClick={this.usernameValidation}>Add</button>
 		</form>
-
-			<p className="items">Users</p>
+			
+			<button onClick={this.toggleHandle}>{this.state.isToggleOn ? "Show the Number of Games Played" : "Hide the Number of Games Played"}</button>
+		<div>
 			<ol className="item-list">
               {this.state.users.map((user) => (
                   <li key={user}>{user.firstName} {user.lastName} - {user.username}
-					<p>The number of games played: {numberOfGames()}</p>
+					<p>The number of games played: {!this.state.isToggleOn ? "0" : ""}</p>
 				</li>
                ))}
 			</ol>
+	</div>
+		</div>
       </div>
     );
   }
