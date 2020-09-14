@@ -4,39 +4,30 @@ import User from './User';
 
 class UserList extends Component {
   state = {
-    showGamesPlayed: true,
+    isToggleOn: false,
   };
 
-  toggleGamesPlayedPanel = () => {
-    this.setState(oldState => ({
-      showGamesPlayed: !oldState.showGamesPlayed,
+  toggleHandle = () => {
+    this.setState((prevState) => ({
+      isToggleOn: !prevState.isToggleOn,
     }));
   };
 
   render() {
-    const { showGamesPlayed } = this.state;
-    const { users } = this.props;
-
-    //JSX for the button that toggles showing and hiding the players' score.
-    const gamesPlayedButton = (
-      <div>
-        <button className="smallButton" onClick={this.toggleGamesPlayedPanel}>
-          {showGamesPlayed ? 'Hide ' : 'Show '}
-          the Number of Games Played
-        </button>
-      </div>
-    );
-
     return (
-      <div>
-        <h1>Users</h1>
-        {users && users.length > 0 ? gamesPlayedButton : ''}
-        <ol>
-          {users.map(user => (
-            <User key={user.username} user={user} showGamesPlayed={showGamesPlayed} />
-          ))}
-        </ol>
-      </div>
+    
+    <div>
+      <button onClick={this.toggleHandle}>{this.state.isToggleOn ? "Show" : "Hide"} the Number of Games Played</button>
+
+		<div>
+			<ol className="item-list">
+              {this.props.users.map((user) => (
+                 <User toggleOn={!this.state.isToggleOn} firstName={user.firstName}  lastName={user.lastName}  username={user.username}/>
+               ))}
+			</ol>
+	  </div>
+	</div>
+
     );
   }
 }

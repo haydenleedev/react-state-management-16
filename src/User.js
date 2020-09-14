@@ -1,19 +1,24 @@
-import React from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 /*
 We can make this a Stateless Functional Component because this element doesn't
 need to hold its own state.
 */
-const User = props => {
-  //return JSX
-  return (
-    <li className="user">
-      <p>Username: {props.user.username}</p>
-      <p>Number of Games Played: {props.showGamesPlayed ? props.user.numGamesPlayed : '*'}</p>
-    </li>
-  );
-};
+class User extends Component {
+
+  render() {
+
+    return (
+    
+    <li key={this.props.username}>{this.props.firstName} {this.props.lastName} - {this.props.username}
+		<p>The number of games played: {this.props.toggleOn ? "0" : ""}</p>
+	</li>
+
+    );
+  }
+}
+
 
 User.propTypes = {
   showGamesPlayed: PropTypes.bool.isRequired,

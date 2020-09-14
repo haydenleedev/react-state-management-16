@@ -3,91 +3,98 @@ import PropTypes from 'prop-types';
 
 class AddUser extends Component {
   state = {
-    user: {
+     user: {
       firstName: '',
       lastName: '',
       username: '',
-    },
-    userExists: false,
+      },
+     usernameValidation: false,
   };
 
-  contactExists = currUsername => {
-    const users = this.props.users;
-    for (let user of users) {
-      if (user.username === currUsername) {
-        return true;
+firstNameHandleChange = event => {
+  const user = {...this.state.user};
+  user.firstName= event.target.value;
+  this.setState({user});
+};
+lastNameHandleChange = event => {
+   const user = {...this.state.user};
+  user.lastName= event.target.value;
+  this.setState({user});
+};
+usernameeHandleChange = event => {
+  const user = {...this.state.user};
+  user.username= event.target.value;
+  this.setState({user});
+  
+};
+inputIsEmpty = () => {
+  return this.state.user.username === '';
+};
+
+sendData = () => {
+         this.props.parentCallback(this.state.user);
+    };
+
+ handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (!this.usernameValidation()) {
+      const userValidation = document.querySelector(".username-validation");
+      if (userValidation) {
+        userValidation.remove();
+      }
+
+	this.sendData();
+      
+    } else {
+      const errorMessage = document.querySelector('.error');
+      if(!errorMessage) {
+      document
+        .querySelector("form")
+        .insertAdjacentHTML(
+          "beforeend",
+          '<p class="error">You cannot add a user that already exists.</p>'
+        );
       }
     }
-    return false;
   };
 
-  handleSubmit = event => {
-    event.preventDefault();
-    const userExists = this.contactExists(this.state.user.username);
-
-    if (!userExists) {
-      this.props.onAddUser(this.state.user);
-    }
-
-    this.setState(() => ({
-      userExists,
-    }));
-  };
-
-  handleInputChange = event => {
-    const { name, value } = event.target;
-
-    this.setState(currState => ({
-      ...currState,
-      user: {
-        ...currState.user,
-        [name]: value,
-      },
-    }));
-  };
-
-  isDisabled = () => {
-    const { firstName, lastName, username } = this.state.user;
-    return firstName === '' || lastName === '' || username === '';
-  };
+usernameValidation = (event) => {
+  let result = false;
+  for (let user of this.props.users) {
+     (user.username === this.state.user.username)
+         ? result = true
+         : result = false
+  }
+  return result
+};
 
   render() {
-    const { firstName, lastName, username } = this.state.user;
 
     return (
       <div>
-        <h1>New User</h1>
-        <form onSubmit={this.handleSubmit}>
-          <div>
-            <input
-              type="text"
-              name="firstName"
-              placeholder="Enter First Name"
-              value={firstName}
-              onChange={this.handleInputChange}
-            />
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Enter Last Name"
-              value={lastName}
-              onChange={this.handleInputChange}
-            />
-            <input
-              type="text"
-              name="username"
-              placeholder="Enter username"
-              value={username}
-              onChange={this.handleInputChange}
-            />
-          </div>
-          <button disabled={this.isDisabled()}>Add</button>
-        </form>
-        {this.state.userExists ? (
-          <p className="error">You cannot add a user that already exists.</p>
-        ) : (
-          ''
-        )}
+      
+       <h1 className="App-title">Users</h1>
+		<form onSubmit={this.handleSubmit}>
+			<input 
+				type="text"
+				placeholder = "First Name"
+				value = {this.state.user.firstName}
+				onChange={this.firstNameHandleChange}
+			/>
+			<input type="text"
+				placeholder = "Last Name"
+				value = {this.state.user.lastName}
+				onChange={this.lastNameHandleChange}
+			/>
+			<input type="text"
+				placeholder = "User Name"
+				value = {this.state.user.username}
+				onChange={this.usernameeHandleChange}
+			/>
+			<button disabled={this.inputIsEmpty()} onClick={this.usernameValidation}>Add</button>
+		</form>
+
       </div>
     );
   }
